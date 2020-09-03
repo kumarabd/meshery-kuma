@@ -22,7 +22,6 @@ func (h *handler) installKuma(del bool, version string) (string, error) {
 
 	if del {
 		status = "removing"
-		// Implement delete instance
 	}
 
 	meshinstance := &MeshInstance{
@@ -34,7 +33,7 @@ func (h *handler) installKuma(del bool, version string) (string, error) {
 	}
 
 	h.log.Info("Installing Kuma")
-	err = meshinstance.installKumactl()
+	err = meshinstance.installKumactl(del)
 	if err != nil {
 		h.log.Err("Kuma installation failed", ErrInstallMesh(err).Error())
 		return status, ErrInstallMesh(err)
@@ -56,15 +55,15 @@ func (h *handler) installSampleApp(name string) (string, error) {
 }
 
 // installMesh installs the mesh in the cluster or the target location
-func (m *MeshInstance) installKumactl(del string) error {
+func (m *MeshInstance) installKumactl(del bool) error {
 
 	Executable, err := exec.LookPath("./scripts/kuma/installer.sh")
 	if err != nil {
 		return err
 	}
 
-	if len(del) > 2 {
-		Executable, err := exec.LookPath("./scripts/kuma/delete.sh")
+	if del {
+		Executable, err = exec.LookPath("./scripts/kuma/delete.sh")
 		if err != nil {
 			return err
 		}
