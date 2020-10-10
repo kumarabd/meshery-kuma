@@ -1,6 +1,9 @@
 package config
 
 import (
+	"fmt"
+	"io/ioutil"
+
 	"github.com/layer5io/gokit/utils"
 
 	"github.com/spf13/viper"
@@ -13,6 +16,12 @@ type Viper struct {
 
 // NewViper intializes a viper instance and dependencies
 func NewViper() (Handler, error) {
+
+	err := ioutil.WriteFile(fmt.Sprintf("%s%s", filepath, filename), []byte(""), 0600)
+	if err != nil {
+		return nil, ErrViper(err)
+	}
+
 	v := viper.New()
 	v.AddConfigPath(filepath)
 	v.SetConfigType(filetype)
@@ -21,7 +30,9 @@ func NewViper() (Handler, error) {
 
 	v.SetDefault("server", server)
 	v.SetDefault("mesh", mesh)
-	err := v.WriteConfig()
+	v.SetDefault("instance", instance)
+	v.SetDefault("operations", operations)
+	err = v.WriteConfig()
 	if err != nil {
 		return nil, ErrViper(err)
 	}
@@ -32,8 +43,13 @@ func NewViper() (Handler, error) {
 }
 
 // SetKey sets a key value in viper
-func (v *Viper) SetKey(key string, value string) {
+func (v *Viper) SetKey(key string, value string) error {
 	v.instance.Set(key, value)
+	err := v.instance.WriteConfig()
+	if err != nil {
+		return ErrViper(err)
+	}
+	return nil
 }
 
 // GetKey gets a key value from viper
@@ -47,7 +63,6 @@ func (v *Viper) GetKey(key string) (string, error) {
 	if err != nil {
 		return " ", ErrViper(err)
 	}
-
 	return s, nil
 }
 
@@ -57,33 +72,32 @@ func (v *Viper) Server(result interface{}) error {
 	if err != nil {
 		return ErrViper(err)
 	}
-
 	return utils.Unmarshal(s, &result)
 }
 
 // MeshSpec provides mesh specific configuration
 func (v *Viper) MeshSpec(result interface{}) error {
-	err := v.instance.ReadInConfig()
+	s, err := v.GetKey("mesh")
 	if err != nil {
 		return ErrViper(err)
 	}
-	return v.instance.Unmarshal(&result)
+	return utils.Unmarshal(s, &result)
 }
 
 // MeshInstance provides mesh specific configuration
 func (v *Viper) MeshInstance(result interface{}) error {
-	err := v.instance.ReadInConfig()
+	s, err := v.GetKey("instance")
 	if err != nil {
 		return ErrViper(err)
 	}
-	return v.instance.Unmarshal(&result)
+	return utils.Unmarshal(s, &result)
 }
 
 // Operations provides list of operations available
 func (v *Viper) Operations(result interface{}) error {
-	err := v.instance.ReadInConfig()
+	s, err := v.GetKey("operations")
 	if err != nil {
 		return ErrViper(err)
 	}
-	return v.instance.Unmarshal(&result)
+	return utils.Unmarshal(s, &result)
 }

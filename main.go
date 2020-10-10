@@ -16,7 +16,7 @@ import (
 var (
 	serviceName    = "kuma-adaptor"
 	configProvider = "viper"
-	kubeConfigPath = fmt.Sprintf("%s/.kube/config", utils.GetHome())
+	kubeConfigPath = fmt.Sprintf("%s/.meshery/kubeconfig", utils.GetHome())
 )
 
 // main is the entrypoint of the adaptor
@@ -38,7 +38,11 @@ func main() {
 	}
 	service := &grpc.Service{}
 	_ = cfg.Server(&service)
-	cfg.SetKey("kube-config-path", kubeConfigPath)
+	err = cfg.SetKey("kubeconfig", kubeConfigPath)
+	if err != nil {
+		log.Err("KubeConfig Set Failed", err.Error())
+		os.Exit(1)
+	}
 
 	// // Initialize Tracing instance
 	// tracer, err := tracing.New(service.Name, service.TraceURL)

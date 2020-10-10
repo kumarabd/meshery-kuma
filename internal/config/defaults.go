@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/layer5io/gokit/utils"
 )
@@ -19,8 +20,16 @@ var (
 	mesh = map[string]string{
 		"name":     "kuma",
 		"status":   "not installed",
-		"traceurl": "http://localhost:14268/api/traces",
+		"traceurl": os.Getenv("TRACING_ENDPOINT"),
 		"version":  "0.6.0",
+	}
+
+	instance = map[string]string{
+		"installmode":     "flat",
+		"installplatform": "kubernetes",
+		"installzone":     " ",
+		"mgmtaddr":        "0.0.0.0:8000",
+		"kumaaddr":        "5681",
 	}
 
 	// operations holds the supported operations inside mesh
@@ -28,35 +37,35 @@ var (
 		InstallKumav071: map[string]interface{}{
 			"type": "0",
 			"properties": map[string]string{
-				"description": "Install Kuma service mesh (0.7.1)",
+				"description": "Kuma service mesh (0.7.1)",
 				"version":     "0.7.1",
 			},
 		},
 		InstallKumav070: map[string]interface{}{
 			"type": "0",
 			"properties": map[string]string{
-				"description": "Install Kuma service mesh (0.7.0)",
+				"description": "Kuma service mesh (0.7.0)",
 				"version":     "0.7.0",
 			},
 		},
 		InstallKumav060: map[string]interface{}{
 			"type": "0",
 			"properties": map[string]string{
-				"description": "Install Kuma service mesh (0.6.0)",
+				"description": "Kuma service mesh (0.6.0)",
 				"version":     "0.6.0",
 			},
 		},
 		InstallSampleBookInfo: map[string]interface{}{
 			"type": "1",
 			"properties": map[string]string{
-				"description": "Install BookInfo Application",
+				"description": "BookInfo Application",
 				"version":     "latest",
 			},
 		},
 		ValidateSmiConformance: map[string]interface{}{
 			"type": "3",
 			"properties": map[string]string{
-				"description": "Validate SMI conformance",
+				"description": "SMI conformance Test",
 				"version":     "latest",
 			},
 		},

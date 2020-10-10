@@ -4,7 +4,7 @@ set -e
 
 # For flat deployment mode
 if [ "$MODE" = "flat" ]; then
-  if ! kuma-$VERSION/bin/kumactl install control-plane | kubectl apply -f -; then
+  if ! kuma-$VERSION/bin/kumactl install control-plane | kubectl --kubeconfig $HOME/.meshery/kubeconfig apply -f -; then
   	printf "ERROR\tUnable to apply manifests\n"
   	exit 1
   fi
@@ -21,20 +21,20 @@ if [ "$MODE" = "distributed" ]; then
     	printf "ERROR\tUnable to install ingress data plane\n"
     	exit 1
     fi
-    if ! kuma-$VERSION/bin/kumactl install dns | kubectl apply -f -; then
+    if ! kuma-$VERSION/bin/kumactl install dns | kubectl --kubeconfig $HOME/.meshery/kubeconfig apply -f -; then
     	printf "ERROR\tUnable to install dns resolvers\n"
     	exit 1
     fi
   else
-    if ! kuma-$VERSION/bin/kumactl install control-plane --mode=remote --zone=$ZONE | kubectl apply -f -; then
+    if ! kuma-$VERSION/bin/kumactl install control-plane --mode=remote --zone=$ZONE | kubectl --kubeconfig $HOME/.meshery/kubeconfig apply -f -; then
     	printf "ERROR\tUnable to create global control-plane\n"
     	exit 1
     fi
-    if ! kuma-$VERSION/bin/kumactl install ingress | kubectl apply -f -; then
+    if ! kuma-$VERSION/bin/kumactl install ingress | kubectl --kubeconfig $HOME/.meshery/kubeconfig apply -f -; then
     	printf "ERROR\tUnable to install ingress data plane\n"
     	exit 1
     fi
-    if ! kuma-$VERSION/bin/kumactl install dns | kubectl apply -f -; then
+    if ! kuma-$VERSION/bin/kumactl install dns | kubectl --kubeconfig $HOME/.meshery/kubeconfig apply -f -; then
     	printf "ERROR\tUnable to install dns resolvers\n"
     	exit 1
     fi

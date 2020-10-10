@@ -3,6 +3,7 @@ package kuma
 import (
 	"context"
 	"io/ioutil"
+	"strconv"
 
 	"gopkg.in/yaml.v2"
 	"k8s.io/client-go/kubernetes"
@@ -49,7 +50,7 @@ func (h *handler) CreateInstance(kubeconfig []byte, contextName string, ch *chan
 
 	var err error
 	h.channel = ch
-	h.kubeConfigPath, err = h.config.GetKey("kube-config-path")
+	h.kubeConfigPath, err = h.config.GetKey("kubeconfig")
 	if err != nil {
 		return ErrClientConfig(err)
 	}
@@ -90,7 +91,7 @@ func (h *handler) clientConfig(kubeconfig []byte, contextName string) (*rest.Con
 }
 
 // writeKubeconfig creates kubeconfig in local container
-func writeKubeconfig(kubeconfig []byte, contextName string, path string) error {
+func writeKubeconfig(kubeconfig []byte, contextName string, file string) error {
 
 	yamlConfig := models.Kubeconfig{}
 	err := yaml.Unmarshal(kubeconfig, &yamlConfig)
@@ -105,7 +106,12 @@ func writeKubeconfig(kubeconfig []byte, contextName string, path string) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(path, d, 0600)
+	f, err := strconv.Unquote(file)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(f, d, 0600)
 	if err != nil {
 		return err
 	}

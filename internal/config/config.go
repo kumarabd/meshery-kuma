@@ -4,7 +4,7 @@ package config
 type Handler interface {
 
 	// SetKey sets a key value in the config
-	SetKey(key string, value string)
+	SetKey(key string, value string) error
 
 	// GetKey gets a key value from the config
 	GetKey(key string) (string, error)

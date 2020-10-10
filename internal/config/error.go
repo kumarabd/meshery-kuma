@@ -15,3 +15,8 @@ var (
 func ErrViper(err error) error {
 	return errors.New(errors.ErrViper, fmt.Sprintf("Viper initialization failed with error: %s", err.Error()))
 }
+
+// ErrLocal is the error object for local-memory config
+func ErrLocal(err error) error {
+	return errors.New(errors.ErrLocal, fmt.Sprintf("Local-mem config initialization failed with error: %s", err.Error()))
+}

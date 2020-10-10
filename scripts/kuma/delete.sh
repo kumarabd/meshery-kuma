@@ -38,7 +38,7 @@ fi
 
 # For flat deployment mode
 if [ "$KUMA_MODE" = "flat" ]; then
-  if ! kuma-$KUMA_VERSION/bin/kumactl install control-plane | kubectl delete -f -; then
+  if ! kuma-$KUMA_VERSION/bin/kumactl install control-plane | kubectl --kubeconfig $HOME/.meshery/kubeconfig delete -f -; then
   	printf "ERROR\tUnable to delete manifests\n"
   	exit 1
   fi

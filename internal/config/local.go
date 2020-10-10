@@ -1,9 +1,6 @@
 package config
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/layer5io/gokit/utils"
 )
 
@@ -22,8 +19,9 @@ func NewLocal() (Handler, error) {
 // -------------------------------------------Application config methods----------------------------------------------------------------
 
 // SetKey sets a key value in local store
-func (l *Local) SetKey(key string, value string) {
+func (l *Local) SetKey(key string, value string) error {
 	l.store[key] = value
+	return nil
 }
 
 // GetKey gets a key value from local store
@@ -33,36 +31,29 @@ func (l *Local) GetKey(key string) (string, error) {
 
 // Server provides server specific configuration
 func (l *Local) Server(result interface{}) error {
-
-	d := fmt.Sprintf(`{
-		"name":    "kuma-adapter",
-		"port":    "10007",
-		"traceurl": "%s",
-		"version": "v1.0.0"
-	}`, os.Getenv("TRACING_ENDPOINT"))
-	return utils.Unmarshal(d, result)
+	s, err := utils.Marshal(server)
+	if err != nil {
+		return ErrLocal(err)
+	}
+	return utils.Unmarshal(s, result)
 }
 
 // MeshSpec provides mesh specific configuration
 func (l *Local) MeshSpec(result interface{}) error {
-	d := `{
-		"name":    "Kuma",
-		"status":  "not installed",
-		"version": "none"
-	}`
-	return utils.Unmarshal(d, result)
+	s, err := utils.Marshal(mesh)
+	if err != nil {
+		return ErrLocal(err)
+	}
+	return utils.Unmarshal(s, result)
 }
 
 // MeshInstance provides mesh specific configuration
 func (l *Local) MeshInstance(result interface{}) error {
-	d := `{
-		"installmode": "flat",
-		"installplatform": "kubernetes",
-		"installzone": " ",
-		"mgmtaddr": "0.0.0.0:8000",
-		"kumaaddr": "5681"
-	}`
-	return utils.Unmarshal(d, result)
+	s, err := utils.Marshal(instance)
+	if err != nil {
+		return ErrLocal(err)
+	}
+	return utils.Unmarshal(s, result)
 }
 
 // Operations provides operations in the mesh
